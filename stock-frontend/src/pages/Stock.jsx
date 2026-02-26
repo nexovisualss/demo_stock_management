@@ -15,6 +15,23 @@ export default function Stock() {
 
   const API = import.meta.env.VITE_API_URL;
 
+  const subCategories = {
+    Shirt: [
+      "Cotton Shirt",
+      "Normal Shirt",
+      "Full Hand Shirt",
+      "Half Hand Shirt",
+    ],
+    "T-shirt": [
+      "Oversized T-shirt",
+      "Polo T-Shirt",
+      "Round Neck T-Shirt",
+      "Normal T-shirt",
+    ],
+    Pant: ["Cotton Pant", "Lycra Pant", "Jeans Pant", "Cargo Pant"],
+    Track: ["Shorts", "Cotton Track", "Normal Track", "Elastic Track"],
+  };
+
   // ✅ FETCH ALL PRODUCTS (ONLY ON LOAD)
   const fetchAllProducts = async () => {
     try {
@@ -72,7 +89,6 @@ export default function Stock() {
 
       {/* SEARCH + FILTER */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-        
         {/* SEARCH */}
         <input
           type="text"
@@ -102,10 +118,21 @@ export default function Stock() {
             onChange={(e) => setSubCategory(e.target.value)}
           >
             <option value="">All SubCategory</option>
-            <option value="Cotton Shirt">Cotton Shirt</option>
-            <option value="Normal Shirt">Normal Shirt</option>
-            <option value="Jeans Pant">Jeans Pant</option>
-            <option value="Cargo Pant">Cargo Pant</option>
+
+            {/* 🔥 DYNAMIC BASED ON CATEGORY */}
+            {category
+              ? subCategories[category]?.map((sub, i) => (
+                  <option key={i} value={sub}>
+                    {sub}
+                  </option>
+                ))
+              : Object.values(subCategories)
+                  .flat()
+                  .map((sub, i) => (
+                    <option key={i} value={sub}>
+                      {sub}
+                    </option>
+                  ))}
           </select>
         </div>
       </div>
