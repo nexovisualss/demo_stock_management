@@ -4,7 +4,7 @@ import Product from "../models/Product.js";
 
 export const getDashboard = async (req, res) => {
   try {
-    const { filter } = req.query;
+    const { filter = "today" } = req.query;
 
     let startDate = new Date();
 
@@ -18,6 +18,7 @@ export const getDashboard = async (req, res) => {
       startDate = new Date(0);
     }
 
+    // ✅ USE CORRECT MODEL
     const history = await StockHistory.find({
       createdAt: { $gte: startDate },
     });
@@ -42,31 +43,23 @@ export const getDashboard = async (req, res) => {
         stockOut += h.quantity;
         graphMap[date].out += h.quantity;
 
-        // 🔥 track top selling
-        if (!productSales[h.productId]) {
-          productSales[h.productId] = 0;
-        }
-        productSales[h.productId] += h.quantity;
+        productSales[h.productId] =
+          (productSales[h.productId] || 0) + h.quantity;
       }
     });
 
     const graphData = Object.values(graphMap);
 
-    // 🔥 TOTAL STOCK
+    // ✅ TOTAL STOCK
     const totalStockAgg = await Product.aggregate([
       { $group: { _id: null, total: { $sum: "$stock" } } },
     ]);
 
     const totalStock = totalStockAgg[0]?.total || 0;
 
-    // 🔥 CATEGORY STATS
+    // ✅ CATEGORY STATS
     const categoryStatsAgg = await Product.aggregate([
-      {
-        $group: {
-          _id: "$category",
-          total: { $sum: "$stock" },
-        },
-      },
+      { $group: { _id: "$category", total: { $sum: "$stock" } } },
     ]);
 
     const categoryStats = {};
@@ -74,32 +67,19 @@ export const getDashboard = async (req, res) => {
       categoryStats[c._id] = c.total;
     });
 
-    // 🔥 LOW STOCK ALERT
-    const lowStock = await Product.find({ stock: { $lt: 10 } });
-
-    // 🔥 TOP SELLING PRODUCTS
-    const topSellingIds = Object.entries(productSales)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map((item) => item[0]);
-
-    const topSellingProducts = await Product.find({
-      _id: { $in: topSellingIds },
-    });
-
-    // 🔔 LOW STOCK ALERT (threshold = 10)
-    const lowStockProducts = await Product.find({
-      stock: { $lte: 10 },
-    }).select("name stock category");
+    // ✅ LOW STOCK
+    const lowStock = await Product.find({ stock: { $lte: 10 } })
+      .select("name stock category");
 
     res.json({
       stockIn,
       stockOut,
-      totalStock: totalStock[0]?.total || 0,
-      categoryStats: categoryObj,
+      totalStock,
+      categoryStats,
       graphData,
-      lowStock: lowStockProducts, // 🔥 IMPORTANT
+      lowStock,
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Dashboard error" });

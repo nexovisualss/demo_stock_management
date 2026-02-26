@@ -1,6 +1,5 @@
 //productController.js
 import Product from "../models/Product.js";
-import StockLog from "../models/StockLog.js";
 import StockHistory from "../models/StockHistory.js";
 
 export const addProduct = async (req, res) => {
@@ -180,95 +179,7 @@ export const sellProduct = async (req, res) => {
   }
 };
 
-// 📊 DASHBOARD DATA
-export const getDashboardData = async (req, res) => {
-  try {
-    const { filter = "today" } = req.query;
 
-    const now = new Date();
-    let startDate;
-
-    if (filter === "today") {
-      startDate = new Date(now.setHours(0, 0, 0, 0));
-    } else if (filter === "month") {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else if (filter === "year") {
-      startDate = new Date(now.getFullYear(), 0, 1);
-    } else {
-      startDate = new Date(0);
-    }
-
-    // 🔥 STOCK LOGS FILTER
-    const logs = await StockLog.find({
-      createdAt: { $gte: startDate },
-    });
-
-    let stockIn = 0;
-    let stockOut = 0;
-
-    logs.forEach((log) => {
-      if (log.type === "IN") stockIn += log.quantity;
-      if (log.type === "OUT") stockOut += log.quantity;
-    });
-
-    // 🔥 TOTAL STOCK
-    const products = await Product.find();
-    const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
-
-    // 🔥 CATEGORY
-    const categoryStats = {
-      Shirt: 0,
-      "T-shirt": 0,
-      Pant: 0,
-      Track: 0,
-    };
-
-    products.forEach((p) => {
-      if (categoryStats[p.category] !== undefined) {
-        categoryStats[p.category] += p.stock;
-      }
-    });
-
-    // 🔥 GRAPH DATA (last 7 days)
-    const graphData = [];
-
-    for (let i = 6; i >= 0; i--) {
-      const day = new Date();
-      day.setDate(day.getDate() - i);
-
-      const start = new Date(day.setHours(0, 0, 0, 0));
-      const end = new Date(day.setHours(23, 59, 59, 999));
-
-      const dayLogs = await StockLog.find({
-        createdAt: { $gte: start, $lte: end },
-      });
-
-      let inQty = 0;
-      let outQty = 0;
-
-      dayLogs.forEach((log) => {
-        if (log.type === "IN") inQty += log.quantity;
-        if (log.type === "OUT") outQty += log.quantity;
-      });
-
-      graphData.push({
-        date: start.toLocaleDateString("en-GB", { day: "2-digit" }),
-        in: inQty,
-        out: outQty,
-      });
-    }
-
-    res.json({
-      totalStock,
-      stockIn,
-      stockOut,
-      categoryStats,
-      graphData,
-    });
-  } catch (err) {
-    res.status(500).json({ msg: "Dashboard error" });
-  }
-};
 
 export const generateHistory = async (req, res) => {
   try {
