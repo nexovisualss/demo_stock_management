@@ -104,7 +104,11 @@ export default function EditProduct() {
         data.append("images", img); // keep same key (correct)
       });
 
-      await axios.put(`${API}/api/products/${id}`, data);
+      await axios.put(`${API}/api/products/${id}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert("Updated ✅");
       navigate("/view-product");
@@ -258,7 +262,7 @@ export default function EditProduct() {
               {existingImages.map((img, i) => (
                 <div key={i} className="relative">
                   <img
-                    src={`https://demo-stock-management.onrender.com${img}`}
+                    src={`${API}${img}`}
                     className="w-24 h-24 object-cover rounded-lg border"
                   />
 

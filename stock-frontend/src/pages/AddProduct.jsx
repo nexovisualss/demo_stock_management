@@ -65,7 +65,11 @@ export default function AddProduct() {
         data.append("images", img); // must match backend
       });
 
-      await axios.post(`${API}/api/products`, data);
+      await axios.post(`${API}/api/products`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert("Product Added ✅");
       navigate("/view-product");
