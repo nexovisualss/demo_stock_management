@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import path from "path";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 // routes
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
+app.use("/api", dashboardRoutes);
 
 // DB connection
 mongoose.connect(process.env.MONGO_URI)

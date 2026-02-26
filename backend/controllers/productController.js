@@ -1,6 +1,7 @@
 //productController.js
 import Product from "../models/Product.js";
 import StockLog from "../models/StockLog.js";
+import StockHistory from "../models/StockHistory.js";
 
 export const addProduct = async (req, res) => {
   try {
@@ -132,22 +133,20 @@ export const restockProduct = async (req, res) => {
 
     const product = await Product.findById(req.params.id);
 
-    if (Number(quantity) <= 0) {
-      return res.status(400).json({ msg: "Invalid quantity" });
-    }
-
     product.stock += Number(quantity);
     await product.save();
 
-    // 🔥 SAVE LOG
-    await StockLog.create({
+    // ✅ SAVE HISTORY
+    await StockHistory.create({
       productId: product._id,
       type: "IN",
-      quantity: Number(quantity),
+      quantity,
+      category: product.category,
+      subCategory: product.subCategory,
     });
 
-    res.json({ msg: "Stock increased", product });
-  } catch (err) {
+    res.json({ msg: "Stock updated", product });
+  } catch {
     res.status(500).json({ msg: "Restock failed" });
   }
 };
@@ -166,11 +165,13 @@ export const sellProduct = async (req, res) => {
     product.stock -= Number(quantity);
     await product.save();
 
-    // 🔥 SAVE LOG
-    await StockLog.create({
+    // ✅ SAVE HISTORY
+    await StockHistory.create({
       productId: product._id,
       type: "OUT",
-      quantity: Number(quantity),
+      quantity,
+      category: product.category,
+      subCategory: product.subCategory,
     });
 
     res.json({ msg: "Stock reduced", product });
