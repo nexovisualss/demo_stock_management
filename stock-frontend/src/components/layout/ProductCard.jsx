@@ -39,32 +39,33 @@ export default function ProductCard({ product, refresh }) {
   return (
     <>
       {/* CARD */}
-      <div className="bg-white p-4 rounded shadow">
-        <img
-          src={
-            product.images?.length
-              ? product.images[0].startsWith("http")
-                ? product.images[0]
-                : `${API}${product.images[0]}`
-              : "https://via.placeholder.com/300"
-          }
-          className="h-40 w-full object-cover rounded"
-        />
+      <div className="bg-white p-4 rounded shadow flex flex-col h-full">
+        <div className="flex-grow">
+          <img
+            src={
+              product.images?.length
+                ? product.images[0].startsWith("http")
+                  ? product.images[0]
+                  : `${API}${product.images[0]}`
+                : "https://via.placeholder.com/300"
+            }
+            className="h-40 w-full object-cover rounded"
+          />
 
-        <h2 className="font-bold mt-2">{product.name}</h2>
-        <p>GSM: {product.gsm}</p>
-        <p>SKU: {product.sku}</p>
+          <h2 className="font-bold mt-2">{product.name}</h2>
+          <p>GSM: {product.gsm}</p>
+          <p>SKU: {product.sku}</p>
 
-        <p
-          className={`font-semibold ${
-            product.stock === 0 ? "text-red-500" : ""
-          }`}
-        >
-          {product.stock === 0 ? "Out of Stock" : `Stock: ${product.stock}`}
-        </p>
-
+          <p
+            className={`font-semibold ${
+              product.stock === 0 ? "text-red-500" : ""
+            }`}
+          >
+            {product.stock === 0 ? "Out of Stock" : `Stock: ${product.stock}`}
+          </p>
+        </div>
         {/* BUTTONS */}
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2 mt-4">
           <button
             onClick={() => {
               setType("restock");
