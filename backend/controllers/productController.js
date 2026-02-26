@@ -89,30 +89,40 @@ export const getSingleProduct = async (req, res) => {
 // 🔍 SEARCH + FILTER PRODUCTS
 export const searchProducts = async (req, res) => {
   try {
-    const { search = "", category = "", subCategory = "" } = req.query;
+    const { search, category, subCategory } = req.query;
 
-    const query = {
-      $and: [
-        {
-          $or: [
-            { name: { $regex: search, $options: "i" } },
-            { sku: { $regex: search, $options: "i" } },
-            { gsm: { $regex: search, $options: "i" } },
-            { category: { $regex: search, $options: "i" } },
-            { subCategory: { $regex: search, $options: "i" } },
-          ],
-        },
-        category ? { category } : {},
-        subCategory ? { subCategory } : {},
-      ],
-    };
+    let query = {};
+
+    // ✅ SEARCH (only if user types something)
+    if (search && search.trim() !== "") {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { sku: { $regex: search, $options: "i" } },
+        { gsm: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+        { subCategory: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // ✅ FILTERS
+    if (category && category !== "") {
+      query.category = category;
+    }
+
+    if (subCategory && subCategory !== "") {
+      query.subCategory = subCategory;
+    }
 
     const products = await Product.find(query);
+
     res.json(products);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ msg: "Search failed" });
   }
 };
+
+
 
 // ➕ RESTOCK PRODUCT
 export const restockProduct = async (req, res) => {
