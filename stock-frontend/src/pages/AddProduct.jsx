@@ -1,3 +1,4 @@
+// src/pages/AddProduct.jsx
 import Layout from "../components/layout/Layout";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
@@ -8,6 +9,7 @@ export default function AddProduct() {
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
   // ✅ form state added
   const [form, setForm] = useState({
@@ -63,7 +65,7 @@ export default function AddProduct() {
         data.append("images", img); // must match backend
       });
 
-      await axios.post(`https://demo-stock-management.onrender.com/api/products`, data);
+      await axios.post(`${API}/api/products`, data);
 
       alert("Product Added ✅");
       navigate("/view-product");

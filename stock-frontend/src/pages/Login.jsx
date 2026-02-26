@@ -1,4 +1,4 @@
-// Login.jsx
+// src/pages/Login.jsx
 import { useState } from "react";
 import axios from "axios";
 
@@ -6,13 +6,14 @@ export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const API = import.meta.env.VITE_API_URL;
 
   const handleLogin = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const res = await axios.post("http://localhost:5000/api/login", form);
+      const res = await axios.post(`${API}/api/login`, form);
 
       localStorage.setItem("token", res.data.token);
       window.location.href = "/dashboard";

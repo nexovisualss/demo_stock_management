@@ -1,4 +1,4 @@
-//editProduct.jsx
+// src/pages/EditProduct.jsx
 import Layout from "../components/layout/Layout";
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function EditProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
@@ -43,8 +44,8 @@ export default function EditProduct() {
   // ✅ FETCH PRODUCT
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await axios.get(`https://demo-stock-management.onrender.com/api/products/${id}`);
-
+      await axios.put(`${API}/api/products/${id}`, data);
+      
       setForm({
         name: res.data.name,
         gsm: res.data.gsm,

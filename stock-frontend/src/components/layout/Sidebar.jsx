@@ -1,3 +1,4 @@
+// src/components/layout/Sidebar.jsx
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Sidebar({ isOpen }) {

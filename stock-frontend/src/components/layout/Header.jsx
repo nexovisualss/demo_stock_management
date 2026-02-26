@@ -1,3 +1,4 @@
+// src/components/layout/Header.jsx
 import { Bell, Menu, Search } from "lucide-react";
 
 export default function Header({ toggleSidebar }) {
