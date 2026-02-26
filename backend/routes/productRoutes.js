@@ -22,6 +22,7 @@ router.get("/products/:id", getSingleProduct);
 router.delete("/products/:id", deleteProduct);
 router.post("/products", upload.array("images", 5), addProduct);
 router.put("/products/:id", upload.array("images", 5), updateProduct);
+import { generateHistory } from "../controllers/productController.js";
 
 // 🔍 SEARCH + FILTER
 router.get("/products/search", searchProducts);
@@ -33,5 +34,7 @@ router.put("/products/restock/:id", restockProduct);
 router.put("/products/sell/:id", sellProduct);
 
 router.get("/dashboard", getDashboardData);
+
+router.get("/products/generate-history", generateHistory);
 
 export default router;

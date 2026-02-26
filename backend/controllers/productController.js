@@ -5,9 +5,7 @@ import StockHistory from "../models/StockHistory.js";
 
 export const addProduct = async (req, res) => {
   try {
-    const imagePaths = req.files
-      ? req.files.map(file => file.path)
-      : [];
+    const imagePaths = req.files ? req.files.map((file) => file.path) : [];
 
     const product = new Product({
       ...req.body,
@@ -15,6 +13,11 @@ export const addProduct = async (req, res) => {
     });
 
     await product.save();
+    await StockHistory.create({
+      productId: product._id,
+      type: "IN",
+      quantity: product.stock,
+    });
     res.json({ msg: "Product added", product });
   } catch (err) {
     res.status(500).json({ msg: "Error adding product" });
@@ -49,9 +52,7 @@ export const updateProduct = async (req, res) => {
       : [];
 
     // ✅ new uploaded images
-    const newImages = req.files
-      ? req.files.map(file => file.path)
-      : [];
+    const newImages = req.files ? req.files.map((file) => file.path) : [];
 
     // ✅ FINAL LOGIC (IMPORTANT)
     if (newImages.length > 0) {
@@ -65,7 +66,7 @@ export const updateProduct = async (req, res) => {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       updatedData,
-      { new: true }
+      { new: true },
     );
 
     res.json({ msg: "Updated", product });
@@ -124,7 +125,6 @@ export const searchProducts = async (req, res) => {
     res.status(500).json({ msg: "Search failed", error: err.message });
   }
 };
-
 
 // ➕ RESTOCK PRODUCT
 export const restockProduct = async (req, res) => {
@@ -267,5 +267,24 @@ export const getDashboardData = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ msg: "Dashboard error" });
+  }
+};
+
+export const generateHistory = async (req, res) => {
+  try {
+    const products = await Product.find();
+
+    for (let p of products) {
+      await StockHistory.create({
+        productId: p._id,
+        type: "IN",
+        quantity: p.stock,
+        createdAt: new Date(),
+      });
+    }
+
+    res.json({ msg: "History generated successfully ✅" });
+  } catch (err) {
+    res.status(500).json({ msg: "Error generating history" });
   }
 };
