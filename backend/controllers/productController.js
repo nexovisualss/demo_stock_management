@@ -86,3 +86,68 @@ export const getSingleProduct = async (req, res) => {
   }
 };
 
+// 🔍 SEARCH + FILTER PRODUCTS
+export const searchProducts = async (req, res) => {
+  try {
+    const { search = "", category = "", subCategory = "" } = req.query;
+
+    const query = {
+      $and: [
+        {
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { sku: { $regex: search, $options: "i" } },
+            { gsm: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+            { subCategory: { $regex: search, $options: "i" } },
+          ],
+        },
+        category ? { category } : {},
+        subCategory ? { subCategory } : {},
+      ],
+    };
+
+    const products = await Product.find(query);
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ msg: "Search failed" });
+  }
+};
+
+// ➕ RESTOCK PRODUCT
+export const restockProduct = async (req, res) => {
+  try {
+    const { quantity } = req.body;
+
+    const product = await Product.findById(req.params.id);
+
+    product.stock += Number(quantity);
+
+    await product.save();
+
+    res.json({ msg: "Stock updated", product });
+  } catch {
+    res.status(500).json({ msg: "Restock failed" });
+  }
+};
+
+// ➖ SELL PRODUCT
+export const sellProduct = async (req, res) => {
+  try {
+    const { quantity } = req.body;
+
+    const product = await Product.findById(req.params.id);
+
+    if (product.stock < quantity) {
+      return res.status(400).json({ msg: "Not enough stock" });
+    }
+
+    product.stock -= Number(quantity);
+
+    await product.save();
+
+    res.json({ msg: "Stock reduced", product });
+  } catch {
+    res.status(500).json({ msg: "Sell failed" });
+  }
+};

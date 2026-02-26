@@ -6,17 +6,12 @@ import Layout from "./components/layout/Layout";
 import AddProduct from "./pages/AddProduct";
 import ViewProduct from "./pages/ViewProduct";
 import EditProduct from "./pages/EditProduct";
+import Stock from "./pages/Stock";
 
 // Pages
 const Dashboard = () => (
   <Layout>
     <h1 className="text-2xl font-bold">Dashboard</h1>
-  </Layout>
-);
-
-const Stock = () => (
-  <Layout>
-    <h1 className="text-2xl font-bold">Stock</h1>
   </Layout>
 );
 
@@ -64,7 +59,6 @@ function App() {
           }
         />
 
-        
         <Route
           path="/view-product"
           element={

@@ -5,7 +5,10 @@ import {
   getProducts,
   deleteProduct,
   updateProduct,
-  getSingleProduct
+  getSingleProduct,
+  searchProducts,
+  restockProduct,
+  sellProduct
 } from "../controllers/productController.js";
 
 import { upload } from "../middleware/upload.js";
@@ -18,5 +21,14 @@ router.get("/products/:id", getSingleProduct);
 router.delete("/products/:id", deleteProduct);
 router.post("/products", upload.array("images", 5), addProduct);
 router.put("/products/:id", upload.array("images", 5), updateProduct);
+
+// 🔍 SEARCH + FILTER
+router.get("/products/search", searchProducts);
+
+// ➕ RESTOCK
+router.put("/products/restock/:id", restockProduct);
+
+// ➖ SELL
+router.put("/products/sell/:id", sellProduct);
 
 export default router;
