@@ -29,7 +29,11 @@ export default function ProductCard({ product, refresh }) {
   return (
     <div className="bg-white p-4 rounded shadow">
       <img
-        src={`http://localhost:5000${product.images[0]}`}
+        src={
+          product.images?.length
+            ? `${import.meta.env.VITE_API_URL}${product.images[0]}`
+            : "https://via.placeholder.com/300"
+        }
         className="h-40 w-full object-cover rounded"
       />
 
@@ -37,7 +41,9 @@ export default function ProductCard({ product, refresh }) {
       <p>GSM: {product.gsm}</p>
       <p>SKU: {product.sku}</p>
 
-      <p className={`font-semibold ${product.stock === 0 ? "text-red-500" : ""}`}>
+      <p
+        className={`font-semibold ${product.stock === 0 ? "text-red-500" : ""}`}
+      >
         {product.stock === 0 ? "Out of Stock" : `Stock: ${product.stock}`}
       </p>
 

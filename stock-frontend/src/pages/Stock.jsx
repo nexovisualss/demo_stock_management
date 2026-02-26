@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/layout/Layout";
+import ProductCard from "../components/layout/ProductCard"; // ✅ IMPORTANT
 
 export default function Stock() {
   const [products, setProducts] = useState([]);
@@ -8,14 +9,19 @@ export default function Stock() {
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
 
-  const API = "http://localhost:5000/api";
+  const API = import.meta.env.VITE_API_URL; // ✅ FIXED
 
   // 🔍 FETCH PRODUCTS
   const fetchProducts = async () => {
-    const res = await axios.get(
-      `${API}/products/search?search=${search}&category=${category}&subCategory=${subCategory}`
-    );
-    setProducts(res.data);
+    try {
+      const res = await axios.get(
+        `${API}/api/products/search?search=${search}&category=${category}&subCategory=${subCategory}`
+      );
+
+      setProducts(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -45,8 +51,10 @@ export default function Stock() {
             onChange={(e) => setCategory(e.target.value)}
           >
             <option value="">All Category</option>
-            <option value="Cotton">Cotton</option>
-            <option value="Polyester">Polyester</option>
+            <option value="Shirt">Shirt</option>
+            <option value="Pant">Pant</option>
+            <option value="T-shirt">T-shirt</option>
+            <option value="Track">Track</option>
           </select>
 
           <select
@@ -54,11 +62,16 @@ export default function Stock() {
             onChange={(e) => setSubCategory(e.target.value)}
           >
             <option value="">All SubCategory</option>
-            <option value="Shirt">Shirt</option>
-            <option value="Pant">Pant</option>
+            <option value="Cotton Shirt">Cotton Shirt</option>
+            <option value="Jeans Pant">Jeans Pant</option>
           </select>
         </div>
       </div>
+
+      {/* EMPTY STATE */}
+      {products.length === 0 && (
+        <p className="text-gray-500">No products found</p>
+      )}
 
       {/* PRODUCT CARDS */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
