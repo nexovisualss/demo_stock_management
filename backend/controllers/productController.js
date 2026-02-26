@@ -169,3 +169,55 @@ export const sellProduct = async (req, res) => {
     res.status(500).json({ msg: "Sell failed" });
   }
 };
+
+// 📊 DASHBOARD DATA
+export const getDashboardData = async (req, res) => {
+  try {
+    const { filter = "today" } = req.query;
+
+    const now = new Date();
+    let startDate;
+
+    if (filter === "today") {
+      startDate = new Date(now.setHours(0, 0, 0, 0));
+    } else if (filter === "month") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (filter === "year") {
+      startDate = new Date(now.getFullYear(), 0, 1);
+    } else {
+      startDate = new Date(0); // all time
+    }
+
+    const products = await Product.find();
+
+    // 🟢 Total stock
+    const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
+
+    // 🟢 Category totals
+    const categoryStats = {
+      Shirt: 0,
+      "T-shirt": 0,
+      Pant: 0,
+      Track: 0,
+    };
+
+    products.forEach((p) => {
+      if (categoryStats[p.category] !== undefined) {
+        categoryStats[p.category] += p.stock;
+      }
+    });
+
+    // 🟢 MOCK IN/OUT (since no history yet)
+    const stockIn = Math.floor(totalStock * 0.3);
+    const stockOut = Math.floor(totalStock * 0.2);
+
+    res.json({
+      totalStock,
+      stockIn,
+      stockOut,
+      categoryStats,
+    });
+  } catch (err) {
+    res.status(500).json({ msg: "Dashboard error" });
+  }
+};

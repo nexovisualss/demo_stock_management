@@ -7,13 +7,7 @@ import AddProduct from "./pages/AddProduct";
 import ViewProduct from "./pages/ViewProduct";
 import EditProduct from "./pages/EditProduct";
 import Stock from "./pages/Stock";
-
-// Pages
-const Dashboard = () => (
-  <Layout>
-    <h1 className="text-2xl font-bold">Dashboard</h1>
-  </Layout>
-);
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
