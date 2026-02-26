@@ -44,8 +44,8 @@ export default function EditProduct() {
   // ✅ FETCH PRODUCT
   useEffect(() => {
     const fetchProduct = async () => {
-      await axios.put(`${API}/api/products/${id}`, data);
-      
+      const res = await axios.get(`${API}/api/products/${id}`);
+
       setForm({
         name: res.data.name,
         gsm: res.data.gsm,
@@ -104,7 +104,7 @@ export default function EditProduct() {
         data.append("images", img); // keep same key (correct)
       });
 
-      await axios.put(`https://demo-stock-management.onrender.com/api/products/${id}`, data);
+      await axios.put(`${API}/api/products/${id}`, data);
 
       alert("Updated ✅");
       navigate("/view-product");
