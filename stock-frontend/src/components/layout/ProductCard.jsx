@@ -43,7 +43,9 @@ export default function ProductCard({ product, refresh }) {
         <img
           src={
             product.images?.length
-              ? product.images[0]
+              ? product.images[0].startsWith("http")
+                ? product.images[0]
+                : `${API}${product.images[0]}`
               : "https://via.placeholder.com/300"
           }
           className="h-40 w-full object-cover rounded"
@@ -58,9 +60,7 @@ export default function ProductCard({ product, refresh }) {
             product.stock === 0 ? "text-red-500" : ""
           }`}
         >
-          {product.stock === 0
-            ? "Out of Stock"
-            : `Stock: ${product.stock}`}
+          {product.stock === 0 ? "Out of Stock" : `Stock: ${product.stock}`}
         </p>
 
         {/* BUTTONS */}

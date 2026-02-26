@@ -108,7 +108,7 @@ export default function ViewProduct() {
                   <td className="p-3">
                     {p.images?.map((img, i) => (
                       <img
-                        src={img}
+                        src={img.startsWith("http") ? img : `${API}${img}`}
                         onError={(e) =>
                           (e.target.src = "https://via.placeholder.com/50")
                         }

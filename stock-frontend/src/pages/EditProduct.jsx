@@ -262,7 +262,7 @@ export default function EditProduct() {
               {existingImages.map((img, i) => (
                 <div key={i} className="relative">
                   <img
-                    src={img}
+                    src={img.startsWith("http") ? img : `${API}${img}`}
                     className="w-24 h-24 object-cover rounded-lg border"
                   />
 
