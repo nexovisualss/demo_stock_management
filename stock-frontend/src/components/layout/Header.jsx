@@ -16,16 +16,6 @@ export default function Header({ toggleSidebar }) {
         </h1>
       </div>
 
-      {/* CENTER: Search */}
-      <div className="hidden md:flex items-center w-1/3 relative">
-        <Search className="absolute left-3 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="w-full pl-10 pr-4 py-2 border rounded-full focus:ring-2 focus:ring-indigo-400 outline-none"
-        />
-      </div>
-
       {/* RIGHT: Icons */}
       <div className="flex items-center gap-4">
         <Bell className="text-gray-600 cursor-pointer" />
