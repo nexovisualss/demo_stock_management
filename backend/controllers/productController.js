@@ -86,15 +86,14 @@ export const getSingleProduct = async (req, res) => {
   }
 };
 
-// 🔍 SEARCH + FILTER PRODUCTS
 export const searchProducts = async (req, res) => {
   try {
-    const { search, category, subCategory } = req.query;
+    const { search = "", category = "", subCategory = "" } = req.query;
 
     let query = {};
 
-    // ✅ SEARCH (only if user types something)
-    if (search && search.trim() !== "") {
+    // ✅ SEARCH ONLY IF VALUE EXISTS
+    if (search.trim()) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { sku: { $regex: search, $options: "i" } },
@@ -104,24 +103,25 @@ export const searchProducts = async (req, res) => {
       ];
     }
 
-    // ✅ FILTERS
-    if (category && category !== "") {
+    // ✅ FILTER ONLY IF EXISTS
+    if (category) {
       query.category = category;
     }
 
-    if (subCategory && subCategory !== "") {
+    if (subCategory) {
       query.subCategory = subCategory;
     }
+
+    console.log("QUERY:", query); // 🔍 DEBUG
 
     const products = await Product.find(query);
 
     res.json(products);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Search failed" });
+    console.error("SEARCH ERROR:", err); // 🔥 VERY IMPORTANT
+    res.status(500).json({ msg: "Search failed", error: err.message });
   }
 };
-
 
 
 // ➕ RESTOCK PRODUCT

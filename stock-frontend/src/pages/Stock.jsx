@@ -14,9 +14,13 @@ export default function Stock() {
   // 🔍 FETCH PRODUCTS
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(
-        `${API}/api/products/search?search=${search}&category=${category}&subCategory=${subCategory}`
-      );
+      const res = await axios.get(`${API}/api/products/search`, {
+        params: {
+          search,
+          category,
+          subCategory,
+        },
+      });
 
       setProducts(res.data);
     } catch (err) {
@@ -34,7 +38,6 @@ export default function Stock() {
 
       {/* SEARCH + FILTER */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-        
         {/* SEARCH */}
         <input
           type="text"
