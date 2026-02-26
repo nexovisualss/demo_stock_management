@@ -1,36 +1,68 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/layout/Layout";
-import ProductCard from "../components/layout/ProductCard"; // ✅ IMPORTANT
+import ProductCard from "../components/layout/ProductCard";
 
 export default function Stock() {
-  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
 
-  const API = import.meta.env.VITE_API_URL; // ✅ FIXED
+  const API = import.meta.env.VITE_API_URL;
 
-  // 🔍 FETCH PRODUCTS
-  const fetchProducts = async () => {
+  // ✅ FETCH ALL PRODUCTS (ONLY ON LOAD)
+  const fetchAllProducts = async () => {
     try {
-      const res = await axios.get(`${API}/api/products/search`, {
-        params: {
-          search,
-          category,
-          subCategory,
-        },
-      });
-
-      setProducts(res.data);
+      const res = await axios.get(`${API}/api/products`);
+      setAllProducts(res.data);
+      setFilteredProducts(res.data); // 👈 show all initially
     } catch (err) {
       console.log(err);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [search, category, subCategory]);
+    fetchAllProducts();
+  }, []);
+
+  // ✅ SEARCH + FILTER LOGIC (FRONTEND)
+  useEffect(() => {
+    let data = [...allProducts];
+
+    // 🔍 SEARCH
+    if (search.trim()) {
+      const value = search.replace(/\s+/g, "").toLowerCase();
+
+      data = data.filter((p) => {
+        const combined = `
+          ${p.name || ""}
+          ${p.sku || ""}
+          ${p.category || ""}
+          ${p.subCategory || ""}
+          ${p.gsm || ""}
+        `
+          .replace(/\s+/g, "")
+          .toLowerCase();
+
+        return combined.includes(value);
+      });
+    }
+
+    // 🎯 CATEGORY FILTER
+    if (category) {
+      data = data.filter((p) => p.category === category);
+    }
+
+    // 🎯 SUBCATEGORY FILTER
+    if (subCategory) {
+      data = data.filter((p) => p.subCategory === subCategory);
+    }
+
+    setFilteredProducts(data);
+  }, [search, category, subCategory, allProducts]);
 
   return (
     <Layout>
@@ -38,6 +70,7 @@ export default function Stock() {
 
       {/* SEARCH + FILTER */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+        
         {/* SEARCH */}
         <input
           type="text"
@@ -51,6 +84,7 @@ export default function Stock() {
         <div className="flex gap-2">
           <select
             className="border p-2 rounded"
+            value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
             <option value="">All Category</option>
@@ -62,26 +96,32 @@ export default function Stock() {
 
           <select
             className="border p-2 rounded"
+            value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
           >
             <option value="">All SubCategory</option>
             <option value="Cotton Shirt">Cotton Shirt</option>
+            <option value="Normal Shirt">Normal Shirt</option>
             <option value="Jeans Pant">Jeans Pant</option>
+            <option value="Cargo Pant">Cargo Pant</option>
           </select>
         </div>
       </div>
 
       {/* EMPTY STATE */}
-      {products.length === 0 && (
+      {filteredProducts.length === 0 ? (
         <p className="text-gray-500">No products found</p>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredProducts.map((p) => (
+            <ProductCard
+              key={p._id}
+              product={p}
+              refresh={fetchAllProducts} // ✅ important
+            />
+          ))}
+        </div>
       )}
-
-      {/* PRODUCT CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((p) => (
-          <ProductCard key={p._id} product={p} refresh={fetchProducts} />
-        ))}
-      </div>
     </Layout>
   );
 }
