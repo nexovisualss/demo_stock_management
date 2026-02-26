@@ -131,12 +131,16 @@ export const restockProduct = async (req, res) => {
 
     const product = await Product.findById(req.params.id);
 
+    if (Number(quantity) <= 0) {
+      return res.status(400).json({ msg: "Invalid quantity" });
+    }
+
     product.stock += Number(quantity);
 
     await product.save();
 
-    res.json({ msg: "Stock updated", product });
-  } catch {
+    res.json({ msg: "Stock increased", product });
+  } catch (err) {
     res.status(500).json({ msg: "Restock failed" });
   }
 };
@@ -147,6 +151,10 @@ export const sellProduct = async (req, res) => {
     const { quantity } = req.body;
 
     const product = await Product.findById(req.params.id);
+
+    if (Number(quantity) <= 0) {
+      return res.status(400).json({ msg: "Invalid quantity" });
+    }
 
     if (product.stock < quantity) {
       return res.status(400).json({ msg: "Not enough stock" });
