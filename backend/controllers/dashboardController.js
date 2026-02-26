@@ -1,3 +1,4 @@
+// controllers/dashboardController.js
 import StockHistory from "../models/StockHistory.js";
 import Product from "../models/Product.js";
 
@@ -24,10 +25,25 @@ export const getDashboard = async (req, res) => {
     let stockIn = 0;
     let stockOut = 0;
 
+    const graphMap = {};
+
     history.forEach((h) => {
-      if (h.type === "IN") stockIn += h.quantity;
-      else stockOut += h.quantity;
+      const date = new Date(h.createdAt).toLocaleDateString("en-GB");
+
+      if (!graphMap[date]) {
+        graphMap[date] = { date, in: 0, out: 0 };
+      }
+
+      if (h.type === "IN") {
+        stockIn += h.quantity;
+        graphMap[date].in += h.quantity;
+      } else {
+        stockOut += h.quantity;
+        graphMap[date].out += h.quantity;
+      }
     });
+
+    const graphData = Object.values(graphMap);
 
     const totalStock = await Product.aggregate([
       { $group: { _id: null, total: { $sum: "$stock" } } },
@@ -52,8 +68,10 @@ export const getDashboard = async (req, res) => {
       stockOut,
       totalStock: totalStock[0]?.total || 0,
       categoryStats: categoryObj,
+      graphData, // ✅ IMPORTANT
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: "Dashboard error" });
   }
 };

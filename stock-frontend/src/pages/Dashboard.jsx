@@ -1,3 +1,4 @@
+// src/pages/Dashboard.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/layout/Layout";
@@ -18,8 +19,8 @@ export default function Dashboard() {
   const API = import.meta.env.VITE_API_URL;
 
   const [data, setData] = useState({});
-  const [filter, setFilter] = useState("today");
-
+  const [filter, setFilter] = useState("all");
+  
   // 🔥 FETCH DASHBOARD
   const fetchDashboard = async () => {
     try {

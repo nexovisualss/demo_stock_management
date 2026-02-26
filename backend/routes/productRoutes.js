@@ -12,7 +12,6 @@ import {
 } from "../controllers/productController.js";
 
 import { upload } from "../middleware/upload.js";
-import { getDashboardData } from "../controllers/productController.js";
 
 const router = express.Router();
 
@@ -32,8 +31,6 @@ router.put("/products/restock/:id", restockProduct);
 
 // ➖ SELL
 router.put("/products/sell/:id", sellProduct);
-
-router.get("/dashboard", getDashboardData);
 
 router.get("/products/generate-history", generateHistory);
 
