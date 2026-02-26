@@ -43,7 +43,7 @@ export default function EditProduct() {
   // ✅ FETCH PRODUCT
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+      const res = await axios.get(`https://demo-stock-management.onrender.com/api/products/${id}`);
 
       setForm({
         name: res.data.name,
@@ -103,7 +103,7 @@ export default function EditProduct() {
         data.append("images", img); // keep same key (correct)
       });
 
-      await axios.put(`http://localhost:5000/api/products/${id}`, data);
+      await axios.put(`https://demo-stock-management.onrender.com/api/products/${id}`, data);
 
       alert("Updated ✅");
       navigate("/view-product");
@@ -257,7 +257,7 @@ export default function EditProduct() {
               {existingImages.map((img, i) => (
                 <div key={i} className="relative">
                   <img
-                    src={`http://localhost:5000${img}`}
+                    src={`https://demo-stock-management.onrender.com${img}`}
                     className="w-24 h-24 object-cover rounded-lg border"
                   />
 

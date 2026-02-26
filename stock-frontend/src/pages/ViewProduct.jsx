@@ -11,7 +11,7 @@ export default function ViewProduct() {
 
   // ✅ fetch data
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/api/products");
+    const res = await axios.get(`https://demo-stock-management.onrender.com/api/products`);
     setProducts(res.data);
   };
 
@@ -21,7 +21,7 @@ export default function ViewProduct() {
 
   // ✅ delete
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/products/${id}`);
+    await axios.delete(`https://demo-stock-management.onrender.com/api/products/${id}`);
     fetchProducts(); // 🔥 real-time update
   };
 
@@ -107,7 +107,7 @@ export default function ViewProduct() {
                     {p.images?.map((img, i) => (
                       <img
                         key={i}
-                        src={`http://localhost:5000${img}`}
+                        src={`https://demo-stock-management.onrender.com${img}`}
                         className="w-12 h-12 object-cover inline mr-2 rounded"
                       />
                     ))}

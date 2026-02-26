@@ -63,7 +63,7 @@ export default function AddProduct() {
         data.append("images", img); // must match backend
       });
 
-      await axios.post("http://localhost:5000/api/products", data);
+      await axios.post(`https://demo-stock-management.onrender.com/api/products`, data);
 
       alert("Product Added ✅");
       navigate("/view-product");
