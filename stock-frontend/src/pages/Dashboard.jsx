@@ -20,13 +20,11 @@ export default function Dashboard() {
 
   const [data, setData] = useState({});
   const [filter, setFilter] = useState("all");
-  
+
   // 🔥 FETCH DASHBOARD
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get(
-        `${API}/api/dashboard?filter=${filter}`
-      );
+      const res = await axios.get(`${API}/api/dashboard?filter=${filter}`);
       setData(res.data);
     } catch (err) {
       console.log(err);
@@ -63,7 +61,6 @@ export default function Dashboard() {
 
       {/* 🔥 TOP CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        
         {/* STOCK IN */}
         <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-2">
           <p className="text-gray-500 text-sm">Stock In</p>
@@ -91,7 +88,6 @@ export default function Dashboard() {
 
       {/* 🔥 GRAPHS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-
         {/* 📈 LINE CHART */}
         <div className="bg-white p-4 rounded-xl shadow h-72">
           <h2 className="font-semibold mb-2">Stock Movement (Line)</h2>
@@ -138,13 +134,27 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* 🔥 TOP SELLING */}
+      <div className="bg-white p-4 rounded-xl shadow mb-6">
+        <h2 className="font-semibold mb-3">Top Selling Products</h2>
+
+        {data.topSellingProducts?.length === 0 ? (
+          <p>No sales data</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {data.topSellingProducts?.map((p) => (
+              <div key={p._id} className="text-center border p-2 rounded">
+                <p className="font-medium">{p.name}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* 🔥 CATEGORY CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {["Shirt", "T-shirt", "Pant", "Track"].map((cat) => (
-          <div
-            key={cat}
-            className="bg-white p-5 rounded-xl shadow text-center"
-          >
+          <div key={cat} className="bg-white p-5 rounded-xl shadow text-center">
             <h2 className="text-gray-600">{cat}</h2>
 
             <p className="text-3xl font-bold text-indigo-600 mt-2">

@@ -26,6 +26,7 @@ export const getDashboard = async (req, res) => {
     let stockOut = 0;
 
     const graphMap = {};
+    const productSales = {};
 
     history.forEach((h) => {
       const date = new Date(h.createdAt).toLocaleDateString("en-GB");
@@ -40,16 +41,26 @@ export const getDashboard = async (req, res) => {
       } else {
         stockOut += h.quantity;
         graphMap[date].out += h.quantity;
+
+        // 🔥 track top selling
+        if (!productSales[h.productId]) {
+          productSales[h.productId] = 0;
+        }
+        productSales[h.productId] += h.quantity;
       }
     });
 
     const graphData = Object.values(graphMap);
 
-    const totalStock = await Product.aggregate([
+    // 🔥 TOTAL STOCK
+    const totalStockAgg = await Product.aggregate([
       { $group: { _id: null, total: { $sum: "$stock" } } },
     ]);
 
-    const categoryStats = await Product.aggregate([
+    const totalStock = totalStockAgg[0]?.total || 0;
+
+    // 🔥 CATEGORY STATS
+    const categoryStatsAgg = await Product.aggregate([
       {
         $group: {
           _id: "$category",
@@ -58,17 +69,32 @@ export const getDashboard = async (req, res) => {
       },
     ]);
 
-    const categoryObj = {};
-    categoryStats.forEach((c) => {
-      categoryObj[c._id] = c.total;
+    const categoryStats = {};
+    categoryStatsAgg.forEach((c) => {
+      categoryStats[c._id] = c.total;
+    });
+
+    // 🔥 LOW STOCK ALERT
+    const lowStock = await Product.find({ stock: { $lt: 10 } });
+
+    // 🔥 TOP SELLING PRODUCTS
+    const topSellingIds = Object.entries(productSales)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map((item) => item[0]);
+
+    const topSellingProducts = await Product.find({
+      _id: { $in: topSellingIds },
     });
 
     res.json({
       stockIn,
       stockOut,
-      totalStock: totalStock[0]?.total || 0,
-      categoryStats: categoryObj,
-      graphData, // ✅ IMPORTANT
+      totalStock,
+      categoryStats,
+      graphData,
+      lowStock,
+      topSellingProducts,
     });
   } catch (err) {
     console.error(err);
