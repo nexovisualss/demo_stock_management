@@ -114,7 +114,7 @@ export default function Stock() {
       {filteredProducts.length === 0 ? (
         <p className="text-gray-500">No products found</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-stretch">
           {filteredProducts.map((p) => (
             <ProductCard
               key={p._id}

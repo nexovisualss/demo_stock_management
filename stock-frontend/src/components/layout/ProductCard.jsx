@@ -39,7 +39,7 @@ export default function ProductCard({ product, refresh }) {
   return (
     <>
       {/* CARD */}
-      <div className="bg-white p-4 rounded shadow flex flex-col h-full">
+      <div className="bg-white p-4 rounded shadow flex flex-col h-full min-h-[320px]">
         <div className="flex-grow">
           <img
             src={
