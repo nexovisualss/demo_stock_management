@@ -14,6 +14,7 @@ export default function Layout({ children }) {
     try {
       const res = await axios.get(`${API}/api/dashboard?filter=all`);
       setAlerts(res.data.lowStock || []);
+      console.log("ALERTS:", res.data.lowStock);
     } catch (err) {
       console.log(err);
     }

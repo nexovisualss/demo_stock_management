@@ -87,14 +87,18 @@ export const getDashboard = async (req, res) => {
       _id: { $in: topSellingIds },
     });
 
+    // 🔔 LOW STOCK ALERT (threshold = 10)
+    const lowStockProducts = await Product.find({
+      stock: { $lte: 10 },
+    }).select("name stock category");
+
     res.json({
       stockIn,
       stockOut,
-      totalStock,
-      categoryStats,
+      totalStock: totalStock[0]?.total || 0,
+      categoryStats: categoryObj,
       graphData,
-      lowStock,
-      topSellingProducts,
+      lowStock: lowStockProducts, // 🔥 IMPORTANT
     });
   } catch (err) {
     console.error(err);
