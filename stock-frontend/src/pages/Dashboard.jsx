@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  Legend,
 } from "recharts";
 
 export default function Dashboard() {
@@ -19,24 +20,24 @@ export default function Dashboard() {
   const [data, setData] = useState({});
   const [filter, setFilter] = useState("today");
 
+  // 🔥 FETCH DASHBOARD
   const fetchDashboard = async () => {
-    const res = await axios.get(`${API}/api/dashboard?filter=${filter}`);
-    setData(res.data);
+    try {
+      const res = await axios.get(
+        `${API}/api/dashboard?filter=${filter}`
+      );
+      setData(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
     fetchDashboard();
   }, [filter]);
 
-  // 📊 Dummy graph data (clean UI)
-  const chartData = [
-    { name: "Mon", value: 20 },
-    { name: "Tue", value: 40 },
-    { name: "Wed", value: 35 },
-    { name: "Thu", value: 50 },
-    { name: "Fri", value: 45 },
-    { name: "Sat", value: 60 },
-  ];
+  // ✅ REAL GRAPH DATA FROM BACKEND
+  const chartData = data.graphData || [];
 
   return (
     <Layout>
@@ -48,69 +49,104 @@ export default function Dashboard() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded ${
-              filter === f ? "bg-indigo-600 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg transition ${
+              filter === f
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
-            {f}
+            {f.toUpperCase()}
           </button>
         ))}
       </div>
 
       {/* 🔥 TOP CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        
         {/* STOCK IN */}
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-gray-500">Stock In</h2>
-          <p className="text-2xl font-bold">{data.stockIn || 0}</p>
+        <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-2">
+          <p className="text-gray-500 text-sm">Stock In</p>
+          <h2 className="text-3xl font-bold text-green-600">
+            {data.stockIn || 0}
+          </h2>
         </div>
 
         {/* STOCK OUT */}
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-gray-500">Stock Out</h2>
-          <p className="text-2xl font-bold">{data.stockOut || 0}</p>
+        <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-2">
+          <p className="text-gray-500 text-sm">Stock Out</p>
+          <h2 className="text-3xl font-bold text-red-500">
+            {data.stockOut || 0}
+          </h2>
         </div>
 
         {/* TOTAL */}
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-gray-500">Total Stock</h2>
-          <p className="text-2xl font-bold">{data.totalStock || 0}</p>
+        <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-2">
+          <p className="text-gray-500 text-sm">Total Stock</p>
+          <h2 className="text-3xl font-bold text-indigo-600">
+            {data.totalStock || 0}
+          </h2>
         </div>
       </div>
 
       {/* 🔥 GRAPHS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* LINE */}
-        <div className="bg-white p-4 rounded shadow h-64">
-          <ResponsiveContainer width="100%" height="100%">
+
+        {/* 📈 LINE CHART */}
+        <div className="bg-white p-4 rounded-xl shadow h-72">
+          <h2 className="font-semibold mb-2">Stock Movement (Line)</h2>
+
+          <ResponsiveContainer width="100%" height="90%">
             <LineChart data={chartData}>
-              <XAxis dataKey="name" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="value" />
+              <Legend />
+
+              <Line
+                type="monotone"
+                dataKey="in"
+                stroke="#22c55e"
+                strokeWidth={2}
+              />
+
+              <Line
+                type="monotone"
+                dataKey="out"
+                stroke="#ef4444"
+                strokeWidth={2}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* BAR */}
-        <div className="bg-white p-4 rounded shadow h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        {/* 📊 BAR CHART */}
+        <div className="bg-white p-4 rounded-xl shadow h-72">
+          <h2 className="font-semibold mb-2">Stock Movement (Bar)</h2>
+
+          <ResponsiveContainer width="100%" height="90%">
             <BarChart data={chartData}>
-              <XAxis dataKey="name" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="value" />
+              <Legend />
+
+              <Bar dataKey="in" fill="#22c55e" />
+              <Bar dataKey="out" fill="#ef4444" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* 🔥 CATEGORY CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {["Shirt", "T-shirt", "Pant", "Track"].map((cat) => (
-          <div key={cat} className="bg-white p-4 rounded shadow text-center">
-            <h2 className="font-semibold">{cat}</h2>
-            <p className="text-2xl font-bold text-indigo-600">
+          <div
+            key={cat}
+            className="bg-white p-5 rounded-xl shadow text-center"
+          >
+            <h2 className="text-gray-600">{cat}</h2>
+
+            <p className="text-3xl font-bold text-indigo-600 mt-2">
               {data.categoryStats?.[cat] || 0}
             </p>
           </div>
