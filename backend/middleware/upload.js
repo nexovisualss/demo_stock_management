@@ -1,23 +1,22 @@
-import multer from "multer";   // ✅ REQUIRED
-import fs from "fs";
-import path from "path";
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
-// create uploads folder if not exists
-const uploadPath = path.join(process.cwd(), "uploads");
+// ✅ Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
-
-// storage config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+// ✅ Cloudinary storage (NO local uploads anymore)
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "products",
+    allowed_formats: ["jpg", "jpeg", "png"],
   },
 });
 
-// ✅ EXPORT PROPERLY
+// ✅ export SAME FORMAT (important for your routes)
 export const upload = multer({ storage });

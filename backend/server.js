@@ -26,7 +26,6 @@ app.get("/", (req, res) => {
 // routes
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // DB connection
 mongoose.connect(process.env.MONGO_URI)

@@ -4,7 +4,7 @@ import Product from "../models/Product.js";
 export const addProduct = async (req, res) => {
   try {
     const imagePaths = req.files
-      ? req.files.map(file => `/uploads/${file.filename}`)
+      ? req.files.map(file => file.path)
       : [];
 
     const product = new Product({
@@ -48,7 +48,7 @@ export const updateProduct = async (req, res) => {
 
     // ✅ new uploaded images
     const newImages = req.files
-      ? req.files.map(file => `/uploads/${file.filename}`)
+      ? req.files.map(file => file.path)
       : [];
 
     // ✅ FINAL LOGIC (IMPORTANT)

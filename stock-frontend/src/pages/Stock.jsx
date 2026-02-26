@@ -1,3 +1,5 @@
+//src/pages/Stock.jsx
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/layout/Layout";

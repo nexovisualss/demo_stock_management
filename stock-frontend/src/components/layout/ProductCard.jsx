@@ -1,3 +1,5 @@
+//src/components/layout/ProductCard.jsx
+
 import { useState } from "react";
 import axios from "axios";
 
@@ -41,7 +43,7 @@ export default function ProductCard({ product, refresh }) {
         <img
           src={
             product.images?.length
-              ? `${API}${product.images[0]}`
+              ? product.images[0]
               : "https://via.placeholder.com/300"
           }
           className="h-40 w-full object-cover rounded"
