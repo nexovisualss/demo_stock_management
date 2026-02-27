@@ -22,7 +22,7 @@ export default function Sidebar({ isOpen }) {
 
   return (
     <aside
-      className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-gray-900 text-white flex flex-col transition-transform duration-300
+      className={`fixed top-16 left-0 z-50 h-[calc(100vh-64px)] bg-gray-900 text-white flex flex-col transition-transform duration-300
       w-[75%] sm:w-[60%] md:w-[25%] lg:w-[15%]
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
     >
